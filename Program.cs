@@ -55,11 +55,11 @@ namespace Игра
         public int Score; // Количество набранных очков
         Random rnd = new Random(); // Инициализируем генератор случайных чисел
         int rand = 0; // Счетчик итераций генератора случайных чисел
-        Type YellowType = Type.GetType("Yellow");
-        Type RedType = Type.GetType("Red");
-        Type BlueType = Type.GetType("Blue");
-        Type GreenType = Type.GetType("Green");
-        Type RainType = Type.GetType("Rainbow");
+        Type YellowType = Type.GetType("Игра.Yellow");
+        Type RedType = Type.GetType("Игра.Red");
+        Type BlueType = Type.GetType("Игра.Blue");
+        Type GreenType = Type.GetType("Игра.Green");
+        Type RainType = Type.GetType("Игра.Rainbow");
 
         /// <summary>
         ///  Генерирует элементы игрового поля
@@ -130,8 +130,8 @@ namespace Игра
                     for (int j = 0; j < SizeM; j++)
                     {
                         // проверяет соседей сверху и снизу от текущ. ячейки на одинаковость (или на радужный квадрат)
-                        if (((Matrix[i - 1, j].GetType() == Matrix[i, j].GetType()) || (Matrix[i - 1, j].GetType() == RainType)
-                            && ((Matrix[i + 1, j].GetType() == Matrix[i, j].GetType()) || (Matrix[i + 1, j].GetType() == RainType))))
+                        if (((Matrix[i - 1, j].GetType() == Matrix[i, j].GetType()) || (Matrix[i - 1, j].GetType() == RainType))
+                            && ((Matrix[i + 1, j].GetType() == Matrix[i, j].GetType()) || (Matrix[i + 1, j].GetType() == RainType)))
                         {
                             // проверяем ещё соседей снизу
                             k = 1;
@@ -193,7 +193,7 @@ namespace Игра
         /// <param name="FposX">Номер столбца ячейки из первого клика</param>
         /// <param name="FposY">Номер строки ячейки из первого клика</param>
         /// <param name="e">Событие - клик мыши</param>
-        public void SecondClick(int FposX, int FposY, MouseEventArgs e) 
+        public bool SecondClick(int FposX, int FposY, MouseEventArgs e) 
         {
             int posX, posY;
             if ((e.X < 37 * this.SizeM) && (e.Y < 37 * this.SizeN)) // защита от клика вне границ игрового поля
@@ -202,28 +202,31 @@ namespace Игра
                 posY = (int)(e.Y / 36);
 
                 // проверяет корректность второго клика
-                if (((Matrix[posY, posX].GetType() == YellowType)|| (Matrix[posY, posX].GetType() == RedType) || (Matrix[posY, posX].GetType() == BlueType) || (Matrix[posY, posX].GetType() == GreenType))
-                    &&((Math.Abs(posX-FposX)==1)&&(Math.Abs(posY-FposY)==0)) || ((Math.Abs(posY-FposY)==1)&&(Math.Abs(posX-FposX)==0)))
+                if (((Matrix[posY, posX].GetType() == YellowType) || (Matrix[posY, posX].GetType() == RedType) || (Matrix[posY, posX].GetType() == BlueType) || (Matrix[posY, posX].GetType() == GreenType))
+                    &&
+                    (((Math.Abs(posX-FposX)==1)&&(Math.Abs(posY-FposY)==0)) || ((Math.Abs(posY-FposY)==1)&&(Math.Abs(posX-FposX)==0))))
                 {
                     Chain(FposX, FposY, posX, posY); // проверяем возможность образования цепочки в реультате перемены мест
+                    return true;
                 }
                 Matrix[FposY, FposX].CreateElement(); // снимаем выделение с ячейки из первого клика
             }
+            return false;
         }
         
         /// <summary>
-       ///Уничтожает цепочки из 3 и более элементов одинаковых по цвету (в том числе Радужного квадрата) по столбцам или строкам игрового поля
-       /// </summary>
-       /// <param name="FposX">Номер столбца ячейки из первого клика</param>
-       /// <param name="FposY">Номер строки ячейки из первого клика</param>
-       /// <param name="SposX">Номер столбца ячейки из второго клика</param>
-       /// <param name="SposY">Номер строки ячейки из второго клика</param>
+        ///Уничтожает цепочки из 3 и более элементов одинаковых по цвету (в том числе Радужного квадрата) по столбцам или строкам игрового поля
+        /// </summary>
+        /// <param name="FposX">Номер столбца ячейки из первого клика</param>
+        /// <param name="FposY">Номер строки ячейки из первого клика</param>
+        /// <param name="SposX">Номер столбца ячейки из второго клика</param>
+        /// <param name="SposY">Номер строки ячейки из второго клика</param>
         public void Chain(int FposX, int FposY, int SposX, int SposY)
         {
-            int StScore = Score; // запоминаем кол-во очков на текущий момент
+            int ChScore = Score; // запоминаем кол-во очков на текущий момент
             Swap(FposX, FposY, SposX, SposY); // меняем местами 2 ячейки с координатами из вх. аргументов
             Scoring(); // считаем кол-во очков на игровом поле
-            if (Score == StScore) // если кол-во очков не изменилось
+            if (Score == ChScore) // если кол-во очков не изменилось
             {
                 Swap(SposX, SposY, FposX, FposY); // меняем 2 ячейки местами обратно
                 Matrix[FposY, FposX].CreateElement(); // снимаем выделение с первой ячейки
@@ -233,9 +236,9 @@ namespace Игра
                 Matrix[SposY, SposX].CreateElement(); // снимаем выделение со второй ячейки
                 do // производим подсчет очков до тех пор, пока не подсчитаем все
                 {
-                    StScore = Score;
+                    ChScore = Score;
                     Scoring();
-                } while (StScore != Score);
+                } while (ChScore != Score);
             }
         }
         
@@ -248,8 +251,7 @@ namespace Игра
         /// <param name="posY">Номер строки ячейки из второго клика</param>
         public void Swap(int FposX, int FposY, int posX, int posY) 
         {
-            Cell SwCell = new Cell(); // создаем ячейку-буфер
-            SwCell = Matrix[FposY, FposX]; // сохраняем в буфер первую ячейку
+            Cell SwCell = Matrix[FposY, FposX]; // сохраняем в буфер первую ячейку
             Matrix[FposY, FposX] = Matrix[posY, posX]; // меняем первую ячейку на вторую
             Matrix[posY, posX] = SwCell; // меняем вторую ячейку на первую (из буфера)
         }
@@ -294,10 +296,7 @@ namespace Игра
     {
         public Image ImgSource; // Хранит изображение объекта
 
-        public Cell() 
-        { 
-            CreateElement(); 
-        }
+        public Cell() { CreateElement(); }
 
         /// <summary>
         /// Создает изображение элемента игрового поля
@@ -312,10 +311,7 @@ namespace Игра
         /// <summary>
         /// Активация
         /// </summary>
-        public virtual bool Activation(int posX, int posY, Board myBoard)
-        { 
-            return false; 
-        }
+        public virtual bool Activation(int posX, int posY, Board myBoard) { return false; }
     }
 
     // 0 - «Базовый желтый», 

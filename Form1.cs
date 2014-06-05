@@ -62,8 +62,12 @@ namespace Игра
             }
             else // если находимся в состоянии ожидании второго клика (flag = True)
             {
-                newGame.newBoard.SecondClick(FposX, FposY, e); // Проверяем возможные действия при втором клике
                 this.Score2.Text = "Второй клик"; // выводим в поле Score2 текст
+                if (!newGame.newBoard.SecondClick(FposX, FposY, e))
+                {
+                    this.Score2.Text = Convert.ToString(newGame.newBoard.Matrix[FposY, FposX].GetType()); // выводим в поле Score2 текст
+                }// Проверяем возможные действия при втором клике
+                
                 this.Refresh(); // обновляем форму
                 flag = false; // снимаем флаг (False - не было первого клика)
             }
