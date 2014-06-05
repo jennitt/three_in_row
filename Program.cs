@@ -50,12 +50,16 @@ namespace Игра
     public class Board
     {
         public int SizeM; //Кол-во столбцов игрового поля
-
         public int SizeN; //Кол-во строк игрового поля
-
         public Cell[,] Matrix; // Матрица объектов класса Cell
-
         public int Score; // Количество набранных очков
+        Random rnd = new Random(); // Инициализируем генератор случайных чисел
+        int rand = 0; // Счетчик итераций генератора случайных чисел
+        Type YellowType = Type.GetType("Yellow");
+        Type RedType = Type.GetType("Red");
+        Type BlueType = Type.GetType("Blue");
+        Type GreenType = Type.GetType("Green");
+        Type RainType = Type.GetType("Rainbow");
 
         /// <summary>
         ///  Генерирует элементы игрового поля
@@ -67,7 +71,7 @@ namespace Игра
             for (int i = 0; i < SizeN; i++) // заполняем матрицу объектами класса Cell
                 for (int j = 0; j < SizeM; j++)
                 {
-                    Matrix[i, j] = newCell.RandElement(0); // ячейке матрицы присваиваем случайный объект класса Cell
+                    Matrix[i, j] = RandElement(); // ячейке матрицы присваиваем случайный объект класса Cell
                 }
         }    
         
@@ -87,8 +91,6 @@ namespace Игра
         /// </summary>
         public void Scoring()
         {
-            Cell ScNewCell = new Cell(); // Создаем объект класса Cell
-
             int k = 1; // счетчик доп. ячеек
 
             int StScore = Score; // запоминает текущее кол-во очков
@@ -98,22 +100,22 @@ namespace Игра
                 for (int j = 1; j < SizeM - 1; j++) // от первого до предпоследнего, т.к. у них нет соседа слева (справа)
                 {
                     // проверяет соседей справа и слева от текущ. ячейки на одинаковость (или на радужный квадрат)
-                    if (((Matrix[i, j - 1].ObjectType == Matrix[i, j].ObjectType) || (Matrix[i, j - 1].ObjectType == 5))
-                        && ((Matrix[i, j + 1].ObjectType == Matrix[i, j].ObjectType) || (Matrix[i, j + 1].ObjectType == 5)))
+                    if (((Matrix[i, j - 1].GetType() == Matrix[i, j].GetType()) || (Matrix[i, j - 1].GetType() == RainType))
+                        && ((Matrix[i, j + 1].GetType() == Matrix[i, j].GetType()) || (Matrix[i, j + 1].GetType() == RainType)))
                     {
                         k = 1;
                         // проверяем ещё соседей справа
-                        while ((j + 1 + k < SizeM) && ((Matrix[i, j + 1 + k].ObjectType == Matrix[i, j].ObjectType) || (Matrix[i, j + 1 + k].ObjectType == 5)))
+                        while ((j + 1 + k < SizeM) && ((Matrix[i, j + 1 + k].GetType() == Matrix[i, j].GetType()) || (Matrix[i, j + 1 + k].GetType() == RainType)))
                             k++;
                         
-                        Matrix[i, j - 1] = ScNewCell.RandElement(5); // заменяем найденные одинаковые ячейки (соседей)
-                        Matrix[i, j] = ScNewCell.RandElement(5);
-                        Matrix[i, j + 1] = ScNewCell.RandElement(5);
+                        Matrix[i, j - 1] = RandElement(); // заменяем найденные одинаковые ячейки (соседей)
+                        Matrix[i, j] = RandElement();
+                        Matrix[i, j + 1] = RandElement();
 
                         if (k != 1) // если были найдены доп. соседи справа
                         {
                             for (int l = 1; l < k; l++)
-                                Matrix[i, j + 1 + l] = ScNewCell.RandElement(5); // меняем доп. соседи на новые
+                                Matrix[i, j + 1 + l] = RandElement(); // меняем доп. соседи на новые
                         }
 
                         Score++; // увеличиваем счетчик очков на 1
@@ -128,22 +130,22 @@ namespace Игра
                     for (int j = 0; j < SizeM; j++)
                     {
                         // проверяет соседей сверху и снизу от текущ. ячейки на одинаковость (или на радужный квадрат)
-                        if (((Matrix[i - 1, j].ObjectType == Matrix[i, j].ObjectType) || (Matrix[i - 1, j].ObjectType == 5))
-                            && ((Matrix[i + 1, j].ObjectType == Matrix[i, j].ObjectType) || (Matrix[i + 1, j].ObjectType == 5)))
+                        if (((Matrix[i - 1, j].GetType() == Matrix[i, j].GetType()) || (Matrix[i - 1, j].GetType() == RainType)
+                            && ((Matrix[i + 1, j].GetType() == Matrix[i, j].GetType()) || (Matrix[i + 1, j].GetType() == RainType))))
                         {
                             // проверяем ещё соседей снизу
                             k = 1;
-                            while ((i + 1 + k < SizeM) && ((Matrix[i + 1 + k, j].ObjectType == Matrix[i, j].ObjectType) || (Matrix[i + 1 + k, j].ObjectType == 5)))
+                            while ((i + 1 + k < SizeM) && ((Matrix[i + 1 + k, j].GetType() == Matrix[i, j].GetType()) || (Matrix[i + 1 + k, j].GetType() == RainType)))
                                 k++;
 
-                            Matrix[i - 1, j] = ScNewCell.RandElement(5);  // заменяем найденные одинаковые ячейки (соседей)
-                            Matrix[i, j] = ScNewCell.RandElement(5);
-                            Matrix[i + 1, j] = ScNewCell.RandElement(5);
+                            Matrix[i - 1, j] = RandElement();  // заменяем найденные одинаковые ячейки (соседей)
+                            Matrix[i, j] = RandElement();
+                            Matrix[i + 1, j] = RandElement();
 
                             if (k != 1) // если были найдены доп. соседи снизу
                             {
                                 for (int l = 1; l < k; l++)
-                                    Matrix[i + 1 + l, j] = ScNewCell.RandElement(5); // меняем доп. соседи на новые
+                                    Matrix[i + 1 + l, j] = RandElement(); // меняем доп. соседи на новые
                             }
 
                             Score++; // увеличиваем счетчик очков на 1
@@ -200,7 +202,7 @@ namespace Игра
                 posY = (int)(e.Y / 36);
 
                 // проверяет корректность второго клика
-                if ((this.Matrix[posY, posX].ObjectType < 4)
+                if (((Matrix[posY, posX].GetType() == YellowType)|| (Matrix[posY, posX].GetType() == RedType) || (Matrix[posY, posX].GetType() == BlueType) || (Matrix[posY, posX].GetType() == GreenType))
                     &&((Math.Abs(posX-FposX)==1)&&(Math.Abs(posY-FposY)==0)) || ((Math.Abs(posY-FposY)==1)&&(Math.Abs(posX-FposX)==0)))
                 {
                     Chain(FposX, FposY, posX, posY); // проверяем возможность образования цепочки в реультате перемены мест
@@ -209,7 +211,7 @@ namespace Игра
             }
         }
         
-       /// <summary>
+        /// <summary>
        ///Уничтожает цепочки из 3 и более элементов одинаковых по цвету (в том числе Радужного квадрата) по столбцам или строкам игрового поля
        /// </summary>
        /// <param name="FposX">Номер столбца ячейки из первого клика</param>
@@ -251,6 +253,38 @@ namespace Игра
             Matrix[FposY, FposX] = Matrix[posY, posX]; // меняем первую ячейку на вторую
             Matrix[posY, posX] = SwCell; // меняем вторую ячейку на первую (из буфера)
         }
+
+        /// <summary>
+        /// Генерирует случайный элемент игрового поля
+        /// </summary>
+        /// <param name="prand">Увеличивает счетчик итераций генератора случайных чисел на значение prand</param>
+        /// <returns>Сгенерированный объект класса Cell (ячейку)</returns>
+        public Cell RandElement()
+        {
+            int op;
+            rand++; // увеличиваем счетчик итераций на 1
+
+            if (rand <= 10) // пока счетчик итераций < 10
+                op = rnd.Next(4); // генерируем только базовые элементы (0, 1, 2, 3)
+            else // счетчик достигает 10
+            {
+                op = rnd.Next(7); // генерируем любой случайный элемент
+                rand = 0; // обнуляем счетчик итераций
+            }
+
+            switch (op)
+            {
+                case 0: return new Yellow();
+                case 1: return new Red();
+                case 2: return new Blue();
+                case 3: return new Green();
+                case 4: return new Bomb();
+                case 5: return new Rainbow();
+                case 6: return new Zip();
+            }
+
+            return new Cell(); // возвращаем сформированный новый объект
+        }
     }
 
     /// <summary>
@@ -258,57 +292,11 @@ namespace Игра
     /// </summary>
     public class Cell
     {
-        // Тип элемента игрового поля
-        // 0 - «Базовый желтый», 
-        // 1 - «Базовый красный», 
-        // 2 - «Базовый синий», 
-        // 3 - «Базовый зеленый», 
-        // 4 - «Бомба», 
-        // 5 - «Радужный квадрат», 
-        // 6 - «Молния»
-        public int ObjectType;
-
         public Image ImgSource; // Хранит изображение объекта
 
-        Random rnd = new Random(); // Инициализируем генератор случайных чисел
-
-        int rand = 0; // Счетчик итераций генератора случайных чисел
-        
-        /// <summary>
-        /// Генерирует случайный элемент игрового поля
-        /// </summary>
-        /// <param name="prand">Увеличивает счетчик итераций генератора случайных чисел на значение prand</param>
-        /// <returns>Сгенерированный объект класса Cell (ячейку)</returns>
-        public Cell RandElement(int prand)
-        {
-            Cell mynewCell = new Cell(); // создаем новый объект класса Cell
-            rand++; // увеличиваем счетчик итераций на 1
-
-            rand += prand; // увеличиваем счетчик итераций на значение prand
-
-            if (rand <= 15) // пока счетчик итераций < 15
-                ObjectType = rnd.Next(4); // генерируем только базовые элементы (0, 1, 2, 3)
-            else // счетчик достигает 15
-            {
-                ObjectType = rnd.Next(7); // генерируем любой случайный элемент
-                rand = 0; // обнуляем счетчик итераций
-            }
-
-            switch (ObjectType)
-            {
-                case 0: 
-                case 1:
-                case 2:
-                case 3: mynewCell = new Basic(); break;
-                case 4: mynewCell = new Bomb(); break;
-                case 5: mynewCell = new Rainbow(); break;
-                case 6: mynewCell = new Zip(); break;
-            }
-
-            mynewCell.ObjectType = ObjectType;
-            mynewCell.CreateElement();
-
-            return mynewCell; // возвращаем сформированный новый объект
+        public Cell() 
+        { 
+            CreateElement(); 
         }
 
         /// <summary>
@@ -324,34 +312,69 @@ namespace Игра
         /// <summary>
         /// Активация
         /// </summary>
-        public virtual bool Activation(int posX, int posY, Board myBoard) { return false; }
+        public virtual bool Activation(int posX, int posY, Board myBoard)
+        { 
+            return false; 
+        }
     }
 
-    public class Basic : Cell
+    // 0 - «Базовый желтый», 
+    public class Yellow : Cell
     {
         public override void CreateElement()
         {
-            switch (this.ObjectType) // в зависимости от типа (его номера) ячейки выделяется своё изображение
-            {
-                case 0: this.ImgSource = Properties.Resources.yellow; break;
-                case 1: this.ImgSource = Properties.Resources.red; break;
-                case 2: this.ImgSource = Properties.Resources.blue; break;
-                case 3: this.ImgSource = Properties.Resources.green; break;
-            }
+            ImgSource = Properties.Resources.yellow;
         }
 
         public override void SelectElement()
         {
-            switch (this.ObjectType) // в зависимости от типа (его номера) ячейки выделяется своё изображение
-            {
-                case 0: this.ImgSource = Properties.Resources.yellow_1; break;
-                case 1: this.ImgSource = Properties.Resources.red_1; break;
-                case 2: this.ImgSource = Properties.Resources.blue_1; break;
-                case 3: this.ImgSource = Properties.Resources.green_1; break;
-            }
+            ImgSource = Properties.Resources.yellow_1;
         }
     }
 
+    // 1 - «Базовый красный»,
+    public class Red : Cell
+    {
+        public override void CreateElement()
+        {
+            ImgSource = Properties.Resources.red;
+        }
+
+        public override void SelectElement()
+        {
+            ImgSource = Properties.Resources.red_1;
+        }
+    }
+
+    // 2 - «Базовый синий»,
+    public class Blue : Cell
+    {
+        public override void CreateElement()
+        {
+            ImgSource = Properties.Resources.blue;
+        }
+
+        public override void SelectElement()
+        {
+            ImgSource = Properties.Resources.blue_1;
+        }
+    }
+
+    // 3 - «Базовый зеленый»,
+    public class Green : Cell
+    {
+        public override void CreateElement()
+        {
+            ImgSource = Properties.Resources.green;
+        }
+
+        public override void SelectElement()
+        {
+            ImgSource = Properties.Resources.green_1;
+        }
+    }
+
+    // 5 - «Радужный квадрат», 
     public class Rainbow : Cell
     {
         public override void CreateElement()
@@ -360,6 +383,7 @@ namespace Игра
         }
     }
 
+    // 4 - «Бомба»,
     public class Bomb : Cell
     {
         public override void CreateElement()
@@ -369,7 +393,6 @@ namespace Игра
 
         public override bool Activation(int posX, int posY, Board myBoard)
         {
-            Cell SqNewCell = new Cell(); // создает новый объект класса Cell
             int lb = posX - 1, rb = posX + 1, tb = posY - 1, bb = posY + 1; // запоминаем координаты границ вокруг ячейки
 
             if (posX == 0) lb = posX; // корректируем границ, чтобы избежать выхода за границы поля
@@ -381,12 +404,13 @@ namespace Игра
                 for (int j = lb; j <= rb; j++)
                 {
                     myBoard.Score++; // увелииваем счетчик очков на 1
-                    myBoard.Matrix[i, j] = SqNewCell.RandElement(8); // заменяем на новый
+                    myBoard.Matrix[i, j] = myBoard.RandElement(); // заменяем на новый
                 }
             return true;
         }
     }
 
+    // 6 - «Молния»
     public class Zip : Cell
     {
         public override void CreateElement()
