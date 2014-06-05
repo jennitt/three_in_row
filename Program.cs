@@ -386,7 +386,13 @@ namespace Игра
         {
             ImgSource = Properties.Resources.bomb;
         }
-
+/// <summary>
+/// Активация
+/// </summary>
+/// <param name="posX"></param>
+/// <param name="posY"></param>
+/// <param name="myBoard"></param>
+/// <returns></returns>
         public override bool Activation(int posX, int posY, Board myBoard)
         {
             int lb = posX - 1, rb = posX + 1, tb = posY - 1, bb = posY + 1; // запоминаем координаты границ вокруг ячейки
@@ -413,7 +419,13 @@ namespace Игра
         {
             ImgSource = Properties.Resources.zip;
         }
-
+        /// <summary>
+        /// Активация
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <param name="myBoard"></param>
+        /// <returns></returns>
         public override bool Activation(int posX, int posY, Board myBoard)
         {
             myBoard.Generate(); // генерируем новое игровое поле
